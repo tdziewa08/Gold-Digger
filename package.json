@@ -1,0 +1,25 @@
+{
+  "name": "gold-digger",
+  "version": "1.0.0",
+  "description": "Node.js Project",
+  "homepage": "https://github.com/tdziewa08/Gold-Digger#readme",
+  "bugs": {
+    "url": "https://github.com/tdziewa08/Gold-Digger/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tdziewa08/Gold-Digger.git"
+  },
+  "license": "ISC",
+  "author": "tdziewa08",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
