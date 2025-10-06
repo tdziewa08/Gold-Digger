@@ -10,6 +10,6 @@ function getStuff() {
         .then(res => res.json()) // Parse as JSON since server sends JSON
         .then(data => {
             console.log(data)
-            tester.textContent = data.message
+            tester.textContent = data
         })
 }
