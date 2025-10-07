@@ -31,7 +31,7 @@ function sendResponse(res, statusCode, contentType, payload) {
 function getData() {
     const randomNumber = Math.floor(Math.random() * 100)
     //const phrase = `Your random number is: ${randomNumber}!!!`
-    return JSON.stringify(randomNumber)
+    return randomNumber
 }
 
 async function parseBody(req) {
@@ -74,3 +74,19 @@ async function writePurchase(price) {
 server.listen(3000, () => {
     console.log("I exist")
 })
+
+
+
+
+
+//TO DO LIST
+
+/*
+    Make the price update from the server side (maintain a constant connection, update every few seconds)
+    --red light when offline, green when online
+
+    Write the prices to a TEXT file not .json file
+    --get the mini-menu to popup
+
+    the server should GET the price number, and when clicked it should POST the price (route accordingly)
+*/

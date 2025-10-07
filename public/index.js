@@ -3,6 +3,10 @@ const tester = document.getElementById("tester")
 const testerBtn = document.getElementById("tester-btn")
 testerBtn.addEventListener('click', getStuff)
 
+const livePrice = document.getElementById("price-display")
+const investment = document.getElementById("investment-amount")
+setInterval(generateNumber, 2000)
+
 
 function getStuff() {
     console.log("Button clicked!")
@@ -12,4 +16,9 @@ function getStuff() {
             console.log(data)
             tester.textContent = data
         })
+}
+
+function generateNumber() {
+    const randomNumber = Math.floor(Math.random() * 100)
+    livePrice.textContent = randomNumber
 }
