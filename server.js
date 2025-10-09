@@ -2,6 +2,7 @@ import http from "node:http"
 import path from "node:path"
 import { readFile, writeFile} from "node:fs/promises"
 import { fileURLToPath } from "node:url"
+import { generateNumber } from "./public/generateNumber.js"
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -16,9 +17,20 @@ const server = http.createServer(async (req, res) => {
     
     if(req.url === "/")
     {
-        const localTest = getData()
-        writePurchase(localTest)
-        sendResponse(res, 200, "application/json", localTest)
+        res.statusCode = 200
+        res.setHeader("Content-Type", "text/event-stream")
+        res.setHeader("Cache-Control", "no-cache")
+        res.setHeader("Connection", "keep-alive")
+
+        setInterval(() => {
+            const goldPrice = generateNumber()
+            res.write(
+                `data: ${JSON.stringify({ event: "goldPrice updated", goldPrice: goldPrice})}\n\n`
+            )
+        }, 2000)
+        // const localTest = getData()
+        // writePurchase(localTest)
+        // sendResponse(res, 200, "application/json", localTest)
     }
 })
 
@@ -83,7 +95,9 @@ server.listen(3000, () => {
 
 /*
     Make the price update from the server side (maintain a constant connection, update every few seconds)
-    --red light when offline, green when online
+    --red light when offline, green when online **DONE**
+
+    --fix memory leak??
 
     Write the prices to a TEXT file not .json file
     --get the mini-menu to popup

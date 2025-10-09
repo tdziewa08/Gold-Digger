@@ -1,12 +1,27 @@
 const tester = document.getElementById("tester")
-//tester.textContent = "NEWWWW"
 const testerBtn = document.getElementById("tester-btn")
 testerBtn.addEventListener('click', getStuff)
 
 const livePrice = document.getElementById("price-display")
+const statusIndicator = document.getElementById("status-indicator")
 const investment = document.getElementById("investment-amount")
-setInterval(generateNumber, 2000)
 
+const eventSource = new EventSource("http://localhost:3000/")
+
+eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data)
+    
+    if(data.event === "connected" || data.event === "goldPrice updated")
+    {
+        statusIndicator.textContent = "🟢"
+        const goldPrice = data.goldPrice
+        livePrice.textContent = goldPrice
+    }
+}
+
+eventSource.onerror = () => {
+  console.log('Connection failed...')
+}
 
 function getStuff() {
     console.log("Button clicked!")
@@ -16,9 +31,4 @@ function getStuff() {
             console.log(data)
             tester.textContent = data
         })
-}
-
-function generateNumber() {
-    const randomNumber = Math.floor(Math.random() * 100)
-    livePrice.textContent = randomNumber
 }
