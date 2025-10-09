@@ -1,12 +1,16 @@
 import http from "node:http"
 import path from "node:path"
-import { readFile, writeFile} from "node:fs/promises"
+import { readFile, writeFile, appendFile} from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 import { generateNumber } from "./public/generateNumber.js"
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+//memory leak fix
+const connectedClients = new Set()
+let priceUpdateInterval = null
 
 
 const server = http.createServer(async (req, res) => {
@@ -15,22 +19,49 @@ const server = http.createServer(async (req, res) => {
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
     res.setHeader("Access-Control-Allow-Headers", "Content-Type")
     
-    if(req.url === "/")
+    if(req.url === "/" && req.method === "GET")
     {
         res.statusCode = 200
         res.setHeader("Content-Type", "text/event-stream")
         res.setHeader("Cache-Control", "no-cache")
         res.setHeader("Connection", "keep-alive")
 
-        setInterval(() => {
-            const goldPrice = generateNumber()
-            res.write(
-                `data: ${JSON.stringify({ event: "goldPrice updated", goldPrice: goldPrice})}\n\n`
-            )
-        }, 2000)
-        // const localTest = getData()
-        // writePurchase(localTest)
-        // sendResponse(res, 200, "application/json", localTest)
+        // Add client to set
+        connectedClients.add(res)
+        console.log(`Clients connected: ${connectedClients.size}`)
+
+        // Send initial price
+        const initialPrice = generateNumber()
+        res.write(`data: ${JSON.stringify({ event: "connected", goldPrice: initialPrice})}\n\n`)
+
+        // Start shared interval ONLY if first client
+        if(connectedClients.size === 1)
+        {
+            priceUpdateInterval = setInterval(() => {
+                const goldPrice = generateNumber()
+                const message = `data: ${JSON.stringify({ event: "goldPrice updated", goldPrice: goldPrice})}\n\n`
+                
+                // Send to ALL clients
+                connectedClients.forEach(clientRes => {
+                    try {
+                        clientRes.write(message)
+                    } catch (error) {
+                        connectedClients.delete(clientRes)
+                    }
+                })
+            }, 2000)
+        }
+
+        // Clean up when client disconnects
+        req.on('close', () => {
+            connectedClients.delete(res)
+            // Stop interval if no clients left
+            if(connectedClients.size === 0 && priceUpdateInterval)
+            {
+                clearInterval(priceUpdateInterval)
+                priceUpdateInterval = null
+            }
+        })
     }
 })
 
@@ -101,6 +132,8 @@ server.listen(3000, () => {
 
     Write the prices to a TEXT file not .json file
     --get the mini-menu to popup
+
+    --reroute to the error page
 
     the server should GET the price number, and when clicked it should POST the price (route accordingly)
 */
