@@ -17,10 +17,6 @@
 <body>
     <main>
         <h1 class="title">GoldDigger</h1>
-        <h2 id="tester">Testing spot</h2>
-        <button id="tester-btn">CHANGE TEXT</button>
-
-
         <img src="gold.png" alt="gold bars and nuggets">
         <section class="price-info-container">
             <p>£<span id="price-display" class="price" aria-live="assertive">----.--</span> / Oz*</p>
@@ -32,13 +28,13 @@
                 <div class="currency">£</div>
                 <input type="number" id="investment-amount" placeholder="100.00" required>
             </div>
-            <button id="invest-btn" class="invest-btn" aria-label="Invest in gold now">Invest Now!</button>
+            <button id="invest-btn" type="button" class="invest-btn" aria-label="Invest in gold now">Invest Now!</button>
         </form>
         <!-- This dialog opens after a successful purchase -->
-        <dialog class="outputs" role="dialog" aria-labelledby="dialog-title" aria-describedby="investment-summary" lang="en">
+        <dialog id="success-modal" class="outputs" role="dialog" aria-labelledby="dialog-title" aria-describedby="investment-summary" lang="en">
             <h2>Summary</h2>
             <p id="investment-summary">You just bought 1.3 ounces (ozt) for £3000. \n You will receive documentation shortly.</p>
-                <button aria-label="Close dialog and return to main page" autofocus>OK</button>
+                <button aria-label="Close dialog and return to main page" type="button" autofocus>OK</button>
         </dialog>
         <p class="footnote">* 1oz = 1 troy ounce of 24 Carat Gold</p>
     </main>

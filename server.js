@@ -14,12 +14,33 @@ let priceUpdateInterval = null
 
 
 const server = http.createServer(async (req, res) => {
+
+    console.log(`🔥 Request received: ${req.method} ${req.url}`) // Add this line
     // Add CORS headers to allow cross-origin requests
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
     res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+
+
+    if (req.method === "OPTIONS") {
+        console.log("✅ Handling OPTIONS preflight request")
+        res.statusCode = 200
+        res.end()
+        return  // Exit early
+    }
     
-    if(req.url === "/" && req.method === "GET")
+    if(req.url === "/" && req.method === "POST")
+    {
+        console.log("tryin to post")
+        try {
+            const purchaseData = await parseBody(req)
+            await writePurchase(purchaseData)
+            sendResponse(res, 200, "application/json", JSON.stringify({message: "Investment logged", success: true}))
+        } catch(error) {
+            console.error(error)
+        }
+    }
+    else if(req.url === "/" && req.method === "GET")
     {
         res.statusCode = 200
         res.setHeader("Content-Type", "text/event-stream")
@@ -63,7 +84,15 @@ const server = http.createServer(async (req, res) => {
             }
         })
     }
+    else
+    {
+        // Handle 404 for unmatched routes
+        res.statusCode = 404
+        res.setHeader('Content-Type', 'text/plain')
+        res.end('Not Found')
+    }
 })
+
 
 function sendResponse(res, statusCode, contentType, payload) {
     res.statusCode = statusCode
@@ -87,30 +116,19 @@ async function parseBody(req) {
     return JSON.parse(body)
 }
 
-async function writePurchase(price) {
-    const pathJSON = path.join(__dirname, "test.json")
-    
+async function writePurchase(purchaseData) {
+    const pathJSON = path.join(__dirname, "investments.txt")
+
+    console.log("writePurchase called with:", purchaseData) // Add this
+    console.log("Writing to:", pathJSON) // Add this
+
+    const log = `${purchaseData.timestamp}, amount paid: $${purchaseData.investment}, price per Oz: ${purchaseData.goldPrice}\n`
     try {
-        // Read existing data
-        const existingData = await readFile(pathJSON, "utf8")
-        const parsed = JSON.parse(existingData)
-        
-        // Create new purchase entry
-        const newPurchase = `I bought gold at: ${price} today!`
-        
-        // Add to existing data (assuming it's an object with purchases array)
-        
-        parsed.purchases.push(newPurchase)
-        
-        // Write back to file
-        await writeFile(pathJSON, JSON.stringify(parsed, null, 2), "utf8")
-        
+        await appendFile(pathJSON, log, "utf8")
+        console.log("✅ Successfully wrote to investments.txt") // Add this
     } catch (error) {
-        // If file doesn't exist or is corrupted, create new structure
-        const newData = {
-            purchases: [`I bought gold at: ${price} today!`]
-        }
-        await writeFile(pathJSON, JSON.stringify(newData, null, 2), "utf8")
+        console.error("❌ Error writing file:", error) // Add this
+        throw error
     }
 }
 
