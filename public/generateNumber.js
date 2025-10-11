@@ -1,4 +1,4 @@
 export function generateNumber() {
-    const price = Math.floor(Math.random() * 100)
+    const price = (Math.random() * 2000).toFixed(3)
     return price
 }

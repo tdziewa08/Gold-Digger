@@ -28,7 +28,8 @@ eventSource.onmessage = (event) => {
 }
 
 eventSource.onerror = () => {
-  console.log('Connection failed...')
+  console.log('Connection failed...', error)
+  statusIndicator.textContent = "🔴"
 }
 
 function logTransaction(event) {
