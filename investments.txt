@@ -22,3 +22,4 @@
 2025-10-11T15:27:36.803Z, amount paid: $12, price per Oz: 69
 2025-10-11T15:29:15.196Z, amount paid: $22, price per Oz: 68
 2025-10-11T15:32:44.195Z, amount paid: $28, price per Oz: 54
+2025-10-21T22:36:30.196Z, amount paid: $223, price per Oz: 1300.198
